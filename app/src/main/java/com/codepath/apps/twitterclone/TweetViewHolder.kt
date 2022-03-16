@@ -49,23 +49,25 @@ class TweetViewHolder(itemView: View, val context: Context) : RecyclerView.ViewH
         Glide.with(itemView).load(tweet.user?.profileImageUrl).into(ivProfileImage)
         if (tweet.media.isNotEmpty()) {
             for (media in tweet.media) {
-                Log.d("peter", "TweetViewHolder bindTweet media.type: ${media.type}")
-                when (media.type) {
-                    Media.Companion.MediaType.PHOTO -> {
-                        Glide.with(itemView).load(media.mediaUrl).into(ivPhoto)
-                    }
-                    Media.Companion.MediaType.VIDEO -> {
-                        Log.d("peter", "TweetViewHolder bindTweet: $tweet")
-                        try {
-                            bindVideo(VideoVariant.getHighestBitRateUrl(media.videoVariants))
-                        } catch (e: Exception) {
-                            Log.e("peter", "TweetViewHolder bindTweet: $e",)
-                        }
-                    }
-                    else -> {}
-                }
-
+                Glide.with(itemView).load(media.mediaUrl).into(ivPhoto)
+//                when (media.type) {
+//                    Media.Companion.MediaType.PHOTO -> {
+//                        Log.d("peter", "TweetViewHolder bindTweet type==PHOTO tweet.body: ${tweet.body}")
+//                        Glide.with(itemView).load(media.mediaUrl).into(ivPhoto)
+//                    }
+//                    Media.Companion.MediaType.VIDEO -> {
+////                        Log.d("peter", "TweetViewHolder bindTweet: $tweet")
+////                        try {
+////                            bindVideo(VideoVariant.getHighestBitRateUrl(media.videoVariants))
+////                        } catch (e: Exception) {
+////                            Log.e("peter", "TweetViewHolder bindTweet: $e",)
+////                        }
+//                    }
+//                    else -> {}
+//                }
             }
+        } else {
+            ivPhoto.setImageDrawable(null)
         }
     }
 

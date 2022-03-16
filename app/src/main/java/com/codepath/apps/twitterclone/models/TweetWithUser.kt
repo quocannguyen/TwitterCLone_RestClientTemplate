@@ -1,5 +1,6 @@
 package com.codepath.apps.twitterclone.models
 
+import android.util.Log
 import androidx.room.Embedded
 
 class TweetWithUser {
@@ -15,7 +16,11 @@ class TweetWithUser {
 
             for (tweetWithUser in tweetsWithUsers) {
                 val tweet = tweetWithUser.tweet
-                tweet.user = tweetWithUser.user
+                try {
+                    tweet.user = tweetWithUser.user
+                } catch (e: Exception) {
+                    Log.e("peter", "TweetWithUser getTweets getUser: $e", )
+                }
                 tweets.add(tweet)
             }
 

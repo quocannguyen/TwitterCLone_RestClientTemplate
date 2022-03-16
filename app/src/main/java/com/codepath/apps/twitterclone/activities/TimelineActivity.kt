@@ -1,6 +1,7 @@
 package com.codepath.apps.twitterclone.activities
 
 import android.content.Intent
+import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -13,6 +14,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.codepath.apps.twitterclone.*
 import com.codepath.apps.twitterclone.models.Tweet
 import com.codepath.apps.twitterclone.models.TweetDao
+import com.codepath.apps.twitterclone.models.TweetWithUser
+import com.codepath.apps.twitterclone.models.User
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import okhttp3.Headers
@@ -52,25 +55,7 @@ class TimelineActivity : AppCompatActivity() {
         setUpSwipeRefresh()
         setUpFloatingActionButtonAdd()
 
-        // Query for existing tweets in the database
-//        try {
-//            AsyncTask.execute {
-//                Log.d("peter", "TimelineActivity onCreate tweetDao.recentItems: Showing data from database")
-//                val tweetsWithUsers = tweetDao.recentItems()
-//                val tweetsFromDB = TweetWithUser.getTweets(tweetsWithUsers)
-//                adapter.clear()
-//                adapter.addAll(tweetsFromDB)
-//            }
-//        } catch (e: Exception) {
-//            Log.e("peter", "TimelineActivity onCreate tweetDao.recentItems: $e", )
-//        }
-        try {
-            if (internetIsConnected()) {
-                fetchTimelineAsync(0)
-            }
-        } catch (e: Exception) {
-            Log.e("peter", "TimelineActivity onCreate fetchTimelineAsync: $e")
-        }
+        populateHomeTimeline()
     }
 
     // Handles clicks on menu items
@@ -113,7 +98,7 @@ class TimelineActivity : AppCompatActivity() {
         // Setup refresh listener which triggers new data loading
         swipeContainer.setOnRefreshListener {
             // Your code to refresh the list here. Make sure you call swipeContainer.setRefreshing(false) once the network request has completed successfully.
-            fetchTimelineAsync(0)
+            populateHomeTimeline()
         }
         // Configure the refreshing colors
         swipeContainer.setColorSchemeResources(
@@ -148,44 +133,49 @@ class TimelineActivity : AppCompatActivity() {
     }
 
     private fun fetchTimelineAsync(page: Int) {
-        // Send the network request to fetch the updated data `client` here is an instance of Android Async HTTP getHomeTimeline is an example endpoint.
-        client.getHomeTimeline(object: JsonHttpResponseHandler() {
-            override fun onSuccess(statusCode: Int, headers: Headers, json: JSON) {
-                // Remember to CLEAR OUT old items before appending in the new ones
-                adapter.clear()
-                try {
-                    // ...the data has come back, add new items to your adapter...
-                    val jsonArray = json.jsonArray
-                    val tweetsFromNetwork = Tweet.fromJsonArray(jsonArray)
-                    adapter.addAll(tweetsFromNetwork)
-                    minId = Tweet.getMinIdFromArray(tweetsFromNetwork)
-                    // Now we call setRefreshing(false) to signal refresh has finished
-                    swipeContainer.isRefreshing = false
+        try {
+            if (internetIsConnected()) {
+                // Send the network request to fetch the updated data `client` here is an instance of Android Async HTTP getHomeTimeline is an example endpoint.
+                client.getHomeTimeline(object: JsonHttpResponseHandler() {
+                    override fun onSuccess(statusCode: Int, headers: Headers, json: JSON) {
+                        // Remember to CLEAR OUT old items before appending in the new ones
+                        adapter.clear()
+                        try {
+                            // ...the data has come back, add new items to your adapter...
+                            val jsonArray = json.jsonArray
+                            val tweetsFromNetwork = Tweet.fromJsonArray(jsonArray)
+                            adapter.addAll(tweetsFromNetwork)
+                            minId = Tweet.getMinIdFromArray(tweetsFromNetwork, minId)
+                            // Now we call setRefreshing(false) to signal refresh has finished
+                            swipeContainer.isRefreshing = false
 
-//                    try {
-//                        // Query for existing tweets in the database
-////                        AsyncTask.execute {
-////                            Log.d("peter", "TimelineActivity fetchTimelineAsync onSuccess tweetDao: Saving data into database")
-////                            // Insert users first
-////                            val usersFromNetwork = User.fromJsonTweetArray(tweetsFromNetwork)
-////                            tweetDao.insertModel(*usersFromNetwork.toTypedArray())
-////                            // Insert tweets next
-////                            tweetDao.insertModel(*tweetsFromNetwork.toTypedArray())
-////                        }
-//                    } catch (e: Exception) {
-//                        Log.e("peter", "onSuccess: $e", )
-//                    }
-                } catch (e: JSONException) {
-                    Log.e("peter", "onSuccess: $e")
-                }
-            }
+                            try {
+                                AsyncTask.execute {
+                                    Log.d("peter", "TimelineActivity fetchTimelineAsync onSuccess tweetDao: Saving data into database")
+                                    // Insert users first
+                                    val usersFromNetwork = User.fromJsonTweetArray(tweetsFromNetwork)
+                                    tweetDao.insertModel(*usersFromNetwork.toTypedArray())
+                                    // Insert tweets next
+                                    tweetDao.insertModel(*tweetsFromNetwork.toTypedArray())
+                                }
+                            } catch (e: Exception) {
+                                Log.e("peter", "onSuccess: $e", )
+                            }
+                        } catch (e: JSONException) {
+                            Log.e("peter", "onSuccess: $e")
+                        }
+                    }
 
-            override fun onFailure(
-                statusCode: Int, headers: Headers, response: String, throwable: Throwable
-            ) {
-                Log.e("peter", "Fetch timeline error $statusCode", throwable)
+                    override fun onFailure(
+                        statusCode: Int, headers: Headers, response: String, throwable: Throwable
+                    ) {
+                        Log.e("peter", "Fetch timeline error $statusCode", throwable)
+                    }
+                })
             }
-        })
+        } catch (e: Exception) {
+            Log.e("peter", "TimelineActivity fetchTimelineAsync: $e")
+        }
     }
 
 
@@ -195,7 +185,7 @@ class TimelineActivity : AppCompatActivity() {
         client.getNextPageOfTweets(object: JsonHttpResponseHandler() {
             override fun onFailure(statusCode: Int, headers: Headers?, response: String?, throwable: Throwable?
             ) {
-                Log.e("peter", "onFailure: $statusCode", throwable)
+                Log.e("peter", "TimelineActivity loadMoreData client.getNextPageOfTweets onFailure: $statusCode", throwable)
             }
 
             override fun onSuccess(statusCode: Int, headers: Headers?, json: JSON) {
@@ -206,7 +196,7 @@ class TimelineActivity : AppCompatActivity() {
                     // 3. Append the new data objects to the existing set of items inside the array of items
                     // 4. Notify the adapter of the new items made with `notifyItemRangeInserted()`
                     adapter.addAll(retrievedTweets)
-                    minId = Tweet.getMinIdFromArray(retrievedTweets)
+                    minId = Tweet.getMinIdFromArray(retrievedTweets, minId)
                 } catch (e: JSONException) {
                     Log.e("peter", "onSuccess: JSONException: $e")
                 }
@@ -221,11 +211,38 @@ class TimelineActivity : AppCompatActivity() {
     }
 
     fun internetIsConnected(): Boolean {
+//        return true
         return try {
             val command = "ping -c 1 google.com"
             Runtime.getRuntime().exec(command).waitFor() == 0
         } catch (e: java.lang.Exception) {
             false
+        }
+    }
+
+    fun populateFromDatabase() {
+        // Query for existing tweets in the database
+        try {
+            AsyncTask.execute {
+                Log.d("peter", "TimelineActivity onCreate tweetDao.recentItems: Showing data from database")
+                val tweetsWithUsers = tweetDao.recentItems()
+                val tweetsFromDB = TweetWithUser.getTweets(tweetsWithUsers)
+                adapter.clear()
+                adapter.addAll(tweetsFromDB)
+            }
+        } catch (e: Exception) {
+            Log.e("peter", "TimelineActivity onCreate tweetDao.recentItems: $e", )
+        }
+
+    }
+
+    fun populateHomeTimeline() {
+        if (!internetIsConnected()) {
+            Log.d("peter", "TimelineActivity populateHomeTimeline internetIsConnected: false")
+            populateFromDatabase()
+        } else {
+            Log.d("peter", "TimelineActivity populateHomeTimeline internetIsConnected: true")
+            fetchTimelineAsync(0)
         }
     }
 

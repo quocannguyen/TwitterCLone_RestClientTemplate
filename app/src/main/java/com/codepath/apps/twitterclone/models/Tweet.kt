@@ -2,6 +2,7 @@ package com.codepath.apps.twitterclone.models
 
 import android.os.Build
 import android.os.Parcelable
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.room.*
 import com.codepath.apps.twitterclone.TimeFormatter
@@ -29,7 +30,7 @@ data class Tweet (
     val media: List<Media>,
 ) : Parcelable {
 
-    constructor(id: Long, body: String, createdAt: String) : this(id, body, createdAt, null, ArrayList<Media>()) {}
+    constructor(id: Long, body: String, createdAt: String) : this(id, body, createdAt, null, ArrayList<Media>())
 
     @ColumnInfo
     var userId: Long? = null
@@ -65,15 +66,18 @@ data class Tweet (
             return tweets
         }
 
-        fun getMinIdFromArray(tweets: List<Tweet>): Long {
-            var minId: Long = tweets[0].id
-            for (tweet in tweets) {
-                val id = tweet.id
-                if (id < minId) {
-                    minId = id
+        fun getMinIdFromArray(tweets: List<Tweet>, minId: Long): Long {
+            return if (tweets.isEmpty()) {
+                minId
+            } else {
+                var newMinId: Long = tweets[0].id
+                for (tweet in tweets) {
+                    if (tweet.id < newMinId) {
+                        newMinId = tweet.id
+                    }
                 }
+                newMinId
             }
-            return minId
         }
     }
 
