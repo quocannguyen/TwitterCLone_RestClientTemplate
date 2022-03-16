@@ -53,6 +53,9 @@ data class Tweet (
             if (jsonObject.has("extended_entities")) {
                 val mediaJsonArray = jsonObject.getJSONObject("extended_entities").getJSONArray("media")
                 (tweet.media as ArrayList<Media>).addAll(Media.fromJsonArray(mediaJsonArray))
+            } else if (jsonObject.has("entities")) {
+//                val mediaJsonArray = jsonObject.getJSONObject("entities").getJSONArray("media")
+//                (tweet.media as ArrayList<Media>).addAll(Media.fromJsonArray(mediaJsonArray))
             }
 
             return tweet

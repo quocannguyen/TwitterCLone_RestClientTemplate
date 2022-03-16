@@ -6,5 +6,5 @@
         android:title="Compose"
         android:id="@+id/compose"
         android:icon="@android:drawable/ic_menu_edit"
-        app:showAsAction="never" />
+        app:showAsAction="always" />
 </menu>
