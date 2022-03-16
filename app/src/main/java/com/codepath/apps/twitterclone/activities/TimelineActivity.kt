@@ -1,25 +1,22 @@
 package com.codepath.apps.twitterclone.activities
 
 import android.content.Intent
-import android.os.AsyncTask
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.codepath.apps.twitterclone.*
 import com.codepath.apps.twitterclone.models.Tweet
 import com.codepath.apps.twitterclone.models.TweetDao
-import com.codepath.apps.twitterclone.models.TweetWithUser
-import com.codepath.apps.twitterclone.models.User
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import okhttp3.Headers
 import org.json.JSONException
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class TimelineActivity : AppCompatActivity() {
 
@@ -48,7 +45,7 @@ class TimelineActivity : AppCompatActivity() {
         try {
             tweetDao = (applicationContext as TwitterApplication).myDatabase?.tweetDao()!!
         } catch (e: Exception) {
-            Log.e("peter", "TimelineActivity onCreate tweetDao: $e", )
+            Log.e("peter", "TimelineActivity onCreate tweetDao: $e")
         }
 
         setUpScrollListener()
@@ -68,9 +65,11 @@ class TimelineActivity : AppCompatActivity() {
 //            Log.e("peter", "TimelineActivity onCreate tweetDao.recentItems: $e", )
 //        }
         try {
-            fetchTimelineAsync(0)
+            if (internetIsConnected()) {
+                fetchTimelineAsync(0)
+            }
         } catch (e: Exception) {
-            Log.e("peter", "TimelineActivity onCreate fetchTimelineAsync: $e", )
+            Log.e("peter", "TimelineActivity onCreate fetchTimelineAsync: $e")
         }
     }
 
@@ -219,6 +218,15 @@ class TimelineActivity : AppCompatActivity() {
     fun showComposeDialog() {
         val composeDialogFragment = ComposeFragment.newInstance("Compose New Tweet")
         composeDialogFragment.show(supportFragmentManager, "peter")
+    }
+
+    fun internetIsConnected(): Boolean {
+        return try {
+            val command = "ping -c 1 google.com"
+            Runtime.getRuntime().exec(command).waitFor() == 0
+        } catch (e: java.lang.Exception) {
+            false
+        }
     }
 
     companion object {
