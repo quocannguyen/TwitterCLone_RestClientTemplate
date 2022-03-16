@@ -1,4 +1,4 @@
-package com.codepath.apps.restclienttemplate.activities
+package com.codepath.apps.twitterclone.activities
 
 import android.content.Intent
 import android.os.AsyncTask
@@ -6,11 +6,11 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.View
-import com.codepath.apps.restclienttemplate.R
-import com.codepath.apps.restclienttemplate.TwitterApplication
-import com.codepath.apps.restclienttemplate.TwitterClient
-import com.codepath.apps.restclienttemplate.models.SampleModel
-import com.codepath.apps.restclienttemplate.models.SampleModelDao
+import com.codepath.apps.twitterclone.R
+import com.codepath.apps.twitterclone.TwitterApplication
+import com.codepath.apps.twitterclone.TwitterClient
+import com.codepath.apps.twitterclone.models.SampleModel
+import com.codepath.apps.twitterclone.models.SampleModelDao
 import com.codepath.oauth.OAuthLoginActionBarActivity
 
 class LoginActivity : OAuthLoginActionBarActivity<TwitterClient>() {

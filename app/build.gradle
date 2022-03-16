@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-kapt'
+    id 'kotlin-parcelize'
 }
 
 def apikeyPropertiesFile = rootProject.file("apikey.properties")
@@ -13,7 +14,7 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "com.codepath.apps.restclienttemplate"
+        applicationId "com.twitterclone"
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
@@ -65,10 +66,12 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.12.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'androidx.recyclerview:recyclerview:1.2.0'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     // Room for simple persistence with an ORM
     def room_version = "2.2.6"
     implementation "androidx.room:room-runtime:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version" // https://guides.codepath.org/android/Room-Guide
     implementation 'com.facebook.stetho:stetho:1.5.1'
 
     // Implementing Pull to Refresh

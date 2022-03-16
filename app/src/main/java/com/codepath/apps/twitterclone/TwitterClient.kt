@@ -1,12 +1,10 @@
-package com.codepath.apps.restclienttemplate
+package com.codepath.apps.twitterclone
 
 import android.content.Context
 import com.codepath.asynchttpclient.RequestParams
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler
 import com.codepath.oauth.OAuthBaseClient
-import com.github.scribejava.apis.FlickrApi
 import com.github.scribejava.apis.TwitterApi
-import com.github.scribejava.core.builder.api.BaseApi
 
 /*
  *
@@ -21,7 +19,7 @@ import com.github.scribejava.core.builder.api.BaseApi
  *
  */
 
-private const val COUNT = 5
+private const val COUNT = 7
 class TwitterClient(context: Context) : OAuthBaseClient(
     context, REST_API_INSTANCE, REST_URL, REST_CONSUMER_KEY, REST_CONSUMER_SECRET,
     null, String.format(
@@ -52,8 +50,7 @@ class TwitterClient(context: Context) : OAuthBaseClient(
     }
 
     fun getHomeTimeline(handler: JsonHttpResponseHandler) {
-        val apiUrl =
-            getApiUrl("statuses/home_timeline.json")
+        val apiUrl = getApiUrl("statuses/home_timeline.json")
 
         // Can specify query string params directly or through RequestParams.
         val params = RequestParams()
@@ -62,21 +59,33 @@ class TwitterClient(context: Context) : OAuthBaseClient(
         client.get(apiUrl, params, handler)
     }
 
-    /* 1. Define the endpoint URL with getApiUrl and pass a relative path to the endpoint
-	 * 	  i.e getApiUrl("statuses/home_timeline.json")
-	 * 2. Define the parameters to pass to the request (query or body)
-	 *    i.e val params = RequestParams("foo", "bar")
-	 * 3. Define the request method and make a call to the client
-	 *    i.e client.get(apiUrl, params, handler)
-	 *    i.e client.post(apiUrl, params, handler)
-	 */
-
 //    fun getNextPageOfTweets(handler: AsyncHttpResponseHandler?, maxId: Long) {
     fun getNextPageOfTweets(handler: JsonHttpResponseHandler, maxId: Long) {
+        /* 1. Define the endpoint URL with getApiUrl and pass a relative path to the endpoint
+         * 	  i.e getApiUrl("statuses/home_timeline.json")
+         * 2. Define the parameters to pass to the request (query or body)
+         *    i.e val params = RequestParams("foo", "bar")
+         * 3. Define the request method and make a call to the client
+         *    i.e client.get(apiUrl, params, handler)
+         *    i.e client.post(apiUrl, params, handler)
+         */
         val apiUrl = getApiUrl("statuses/home_timeline.json")
         val params = RequestParams()
         params.put("count", COUNT)
         params.put("max_id", maxId)
         client.get(apiUrl, params, handler)
+    }
+
+    fun publishTweet(handler: JsonHttpResponseHandler, tweetContent: String, inReplyToStatusId: Long? = null) {
+        val apiUrl = getApiUrl("statuses/update.json")
+
+        // Can specify query string params directly or through RequestParams.
+        val params = RequestParams()
+        params.put("status", tweetContent)
+        if (inReplyToStatusId != null) {
+            params.put("in_reply_to_status_id", inReplyToStatusId)
+            params.put("auto_populate_reply_metadata", true)
+        }
+        client.post(apiUrl, params, "", handler)
     }
 }
