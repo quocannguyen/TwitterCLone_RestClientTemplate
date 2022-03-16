@@ -1,2 +1,2 @@
 include ':app'
-rootProject.name = "TwitterCLone_RestClientTemplate"
+rootProject.name = "TwitterClone_RestClientTemplate"
