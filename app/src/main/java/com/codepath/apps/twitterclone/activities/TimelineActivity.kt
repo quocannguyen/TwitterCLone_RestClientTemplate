@@ -159,10 +159,10 @@ class TimelineActivity : AppCompatActivity() {
                                     tweetDao.insertModel(*tweetsFromNetwork.toTypedArray())
                                 }
                             } catch (e: Exception) {
-                                Log.e("peter", "onSuccess: $e", )
+                                Log.e("peter", "TimelineActivity fetchTimelineAsync onSuccess AsyncTask.execute { tweetDao}: $e", )
                             }
                         } catch (e: JSONException) {
-                            Log.e("peter", "onSuccess: $e")
+                            Log.e("peter", "TimelineActivity fetchTimelineAsync onSuccess: $e")
                         }
                     }
 
@@ -198,7 +198,7 @@ class TimelineActivity : AppCompatActivity() {
                     adapter.addAll(retrievedTweets)
                     minId = Tweet.getMinIdFromArray(retrievedTweets, minId)
                 } catch (e: JSONException) {
-                    Log.e("peter", "onSuccess: JSONException: $e")
+                    Log.e("peter", "TimelineActivity loadMoreData onSuccess: JSONException: $e")
                 }
             }
 
@@ -211,7 +211,7 @@ class TimelineActivity : AppCompatActivity() {
     }
 
     fun internetIsConnected(): Boolean {
-//        return true
+        return true
         return try {
             val command = "ping -c 1 google.com"
             Runtime.getRuntime().exec(command).waitFor() == 0
