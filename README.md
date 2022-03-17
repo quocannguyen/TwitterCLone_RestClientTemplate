@@ -50,7 +50,6 @@ Describe any challenges encountered while building the app.
 - I do not fully understand Room yet.
 - I do not know how to play a video from Url. I have not tried using YoutubePlayerView because the videos from Twitter are not Youtube videos.
 - It would be nice if there were a way to change Twitter account.
-- ReplyActivity doesn't return to TimelineActivity.
 
 ## Open-source libraries used
 

@@ -9,6 +9,7 @@ import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import com.codepath.apps.twitterclone.R
 import com.codepath.apps.twitterclone.TwitterApplication
 import com.codepath.apps.twitterclone.TwitterClient
@@ -100,6 +101,7 @@ class ComposeActivity : AppCompatActivity() {
         fileOutputStream.write(draft.toByteArray())
 //        writer.write(etCompose.text.toString())
         writer.close()
+        Toast.makeText(this, "Draft saved!", Toast.LENGTH_LONG).show()
     }
 
     fun loadDraft() {

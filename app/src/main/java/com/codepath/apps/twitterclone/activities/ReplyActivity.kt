@@ -64,6 +64,7 @@ class ReplyActivity : AppCompatActivity() {
                     val intent = Intent()
                     intent.putExtra("tweet", tweet)
                     setResult(RESULT_OK, intent)
+                    Toast.makeText(this@ReplyActivity, "Reply tweeted!", Toast.LENGTH_LONG).show()
                     finish()
                 }
             }, tweetContent, tweet.id)
