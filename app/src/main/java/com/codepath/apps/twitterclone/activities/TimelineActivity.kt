@@ -54,7 +54,6 @@ class TimelineActivity : AppCompatActivity() {
         setUpScrollListener()
         setUpSwipeRefresh()
         setUpFloatingActionButtonAdd()
-
         populateHomeTimeline()
     }
 
@@ -127,8 +126,9 @@ class TimelineActivity : AppCompatActivity() {
         fabAdd.setOnClickListener {
             Toast.makeText(this, "Ready to compose tweet!", Toast.LENGTH_LONG).show()
             // Navigate to compose screen
-            val intent = Intent(this, ComposeActivity::class.java)
-            startActivityForResult(intent, RC_COMPOSE)
+//            val intent = Intent(this, ComposeActivity::class.java)
+//            startActivityForResult(intent, RC_COMPOSE)
+            showComposeDialog()
         }
     }
 
@@ -178,7 +178,6 @@ class TimelineActivity : AppCompatActivity() {
         }
     }
 
-
     // this is where we will make another API call to get the next page of tweets and add the objects to our current list of tweets
     fun loadMoreData() {
         // 1. Send an API request to retrieve appropriate paginated data
@@ -207,6 +206,14 @@ class TimelineActivity : AppCompatActivity() {
 
     fun showComposeDialog() {
         val composeDialogFragment = ComposeFragment.newInstance("Compose New Tweet")
+        composeDialogFragment.composeTweetDialogListener = object : ComposeTweetDialogListener {
+            override fun onFinishComposeDialog(tweet: Tweet) {
+                tweets.add(0, tweet)
+                // Update adapter
+                adapter.notifyItemInserted(0)
+                rvTimeline.smoothScrollToPosition(0)
+            }
+        }
         composeDialogFragment.show(supportFragmentManager, "peter")
     }
 
