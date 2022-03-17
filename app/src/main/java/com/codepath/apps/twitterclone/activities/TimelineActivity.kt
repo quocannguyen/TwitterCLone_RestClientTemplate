@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.codepath.apps.twitterclone.*
+import com.codepath.apps.twitterclone.fragments.ComposeFragment
+import com.codepath.apps.twitterclone.interfaces.ComposeTweetDialogListener
 import com.codepath.apps.twitterclone.models.Tweet
 import com.codepath.apps.twitterclone.models.TweetDao
 import com.codepath.apps.twitterclone.models.TweetWithUser

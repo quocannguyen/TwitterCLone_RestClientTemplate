@@ -1,4 +1,4 @@
-package com.codepath.apps.twitterclone.activities
+package com.codepath.apps.twitterclone.interfaces
 
 import com.codepath.apps.twitterclone.models.Tweet
 

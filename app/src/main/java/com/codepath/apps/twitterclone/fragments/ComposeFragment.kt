@@ -1,11 +1,9 @@
-package com.codepath.apps.twitterclone
+package com.codepath.apps.twitterclone.fragments
 
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,13 +12,15 @@ import androidx.fragment.app.DialogFragment
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
-import com.codepath.apps.twitterclone.activities.ComposeTweetDialogListener
+import com.codepath.apps.twitterclone.R
+import com.codepath.apps.twitterclone.TwitterApplication
+import com.codepath.apps.twitterclone.TwitterClient
+import com.codepath.apps.twitterclone.interfaces.ComposeTweetDialogListener
 import com.codepath.apps.twitterclone.models.Tweet
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler
 import okhttp3.Headers
 
-private const val FRAGMENT_TITLE = "title"
+//private const val FRAGMENT_TITLE = "title"
 
 class ComposeFragment : DialogFragment() {
 
@@ -58,8 +58,8 @@ class ComposeFragment : DialogFragment() {
         setButtonTweet()
         addCharacterCounter()
         // Fetch arguments from bundle and set title
-        val title = arguments?.getString(FRAGMENT_TITLE, "Enter tweet")
-        dialog?.setTitle(title)
+//        val title = arguments?.getString(FRAGMENT_TITLE, "Enter tweet")
+//        dialog?.setTitle(title)
         // Show soft keyboard automatically and request focus to field
         etCompose.requestFocus()
         dialog?.window?.setSoftInputMode(
