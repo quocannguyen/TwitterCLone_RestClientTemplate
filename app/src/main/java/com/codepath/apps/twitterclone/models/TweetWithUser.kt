@@ -2,10 +2,11 @@ package com.codepath.apps.twitterclone.models
 
 import android.util.Log
 import androidx.room.Embedded
+import androidx.room.Entity
 
 class TweetWithUser {
     // @Embedded notation flattens the properties of the User object into the object, preserving encapsulation
-    @Embedded(prefix = "user_")
+    @Embedded(prefix = "")
     lateinit var user: User
     @Embedded(prefix = "tweet_")
     lateinit var tweet: Tweet

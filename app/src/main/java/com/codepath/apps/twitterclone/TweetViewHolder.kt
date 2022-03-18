@@ -49,19 +49,19 @@ class TweetViewHolder(itemView: View, val context: Context) : RecyclerView.ViewH
         Glide.with(itemView).load(tweet.user?.profileImageUrl).into(ivProfileImage)
         if (tweet.media.isNotEmpty()) {
             for (media in tweet.media) {
-                Glide.with(itemView).load(media.mediaUrl).into(ivPhoto)
+//                Glide.with(itemView).load(media.mediaUrl).into(ivPhoto)
 //                when (media.type) {
 //                    Media.Companion.MediaType.PHOTO -> {
-//                        Log.d("peter", "TweetViewHolder bindTweet type==PHOTO tweet.body: ${tweet.body}")
-//                        Glide.with(itemView).load(media.mediaUrl).into(ivPhoto)
+////                        Log.d("peter", "TweetViewHolder bindTweet type==PHOTO tweet.body: ${tweet.body}")
+////                        Glide.with(itemView).load(media.mediaUrl).into(ivPhoto)
 //                    }
 //                    Media.Companion.MediaType.VIDEO -> {
-////                        Log.d("peter", "TweetViewHolder bindTweet: $tweet")
-////                        try {
-////                            bindVideo(VideoVariant.getHighestBitRateUrl(media.videoVariants))
-////                        } catch (e: Exception) {
-////                            Log.e("peter", "TweetViewHolder bindTweet: $e",)
-////                        }
+//                        Log.d("peter", "TweetViewHolder bindTweet: $tweet")
+//                        try {
+//                            bindVideo(VideoVariant.getHighestBitRateUrl(media.videoVariants))
+//                        } catch (e: Exception) {
+//                            Log.e("peter", "TweetViewHolder bindTweet: $e",)
+//                        }
 //                    }
 //                    else -> {}
 //                }
@@ -73,6 +73,7 @@ class TweetViewHolder(itemView: View, val context: Context) : RecyclerView.ViewH
 
     fun bindVideo(videoUrl: String) {
         Log.d("peter", "TweetViewHolder bindVideo: $videoUrl")
+
         // Uri object to refer the resource from the videoUrl
         val uri: Uri = Uri.parse(videoUrl)
         // sets the resource from the videoUrl to the videoView

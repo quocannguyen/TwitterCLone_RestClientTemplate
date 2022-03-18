@@ -29,7 +29,7 @@ data class Media (
         }
 
         fun fromJsonObject(jsonObject: JSONObject): Media {
-            Log.d("peter", "Media fromJsonObject: $jsonObject")
+//            Log.d("peter", "Media fromJsonObject: $jsonObject")
             val media = Media (
                 id = jsonObject.getLong("id"),
                 mediaUrl = jsonObject.getString("media_url_https"),

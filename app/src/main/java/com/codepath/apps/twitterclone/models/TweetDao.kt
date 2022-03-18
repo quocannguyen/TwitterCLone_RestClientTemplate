@@ -24,4 +24,7 @@ interface TweetDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertModel(vararg users: User?)
+
+    @Query("DELETE FROM Tweet")
+    fun deleteAllTweets()
 }

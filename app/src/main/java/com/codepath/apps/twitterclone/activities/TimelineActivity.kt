@@ -1,5 +1,6 @@
 package com.codepath.apps.twitterclone.activities
 
+import android.content.Context
 import android.content.Intent
 import android.os.AsyncTask
 import android.os.Bundle
@@ -22,6 +23,7 @@ import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import okhttp3.Headers
 import org.json.JSONException
+import android.net.ConnectivityManager
 
 class TimelineActivity : AppCompatActivity() {
 
@@ -99,7 +101,12 @@ class TimelineActivity : AppCompatActivity() {
         // Setup refresh listener which triggers new data loading
         swipeContainer.setOnRefreshListener {
             // Your code to refresh the list here. Make sure you call swipeContainer.setRefreshing(false) once the network request has completed successfully.
-            populateHomeTimeline()
+            if (isInternetConnected()) {
+                populateHomeTimeline()
+            } else {
+                Toast.makeText(this, "No Internet connection.", Toast.LENGTH_LONG).show()
+                swipeContainer.isRefreshing = false
+            }
         }
         // Configure the refreshing colors
         swipeContainer.setColorSchemeResources(
@@ -136,45 +143,47 @@ class TimelineActivity : AppCompatActivity() {
 
     private fun fetchTimelineAsync(page: Int) {
         try {
-            if (internetIsConnected()) {
-                // Send the network request to fetch the updated data `client` here is an instance of Android Async HTTP getHomeTimeline is an example endpoint.
-                client.getHomeTimeline(object: JsonHttpResponseHandler() {
-                    override fun onSuccess(statusCode: Int, headers: Headers, json: JSON) {
-                        // Remember to CLEAR OUT old items before appending in the new ones
-                        adapter.clear()
+            // Send the network request to fetch the updated data `client` here is an instance of Android Async HTTP getHomeTimeline is an example endpoint.
+            client.getHomeTimeline(object: JsonHttpResponseHandler() {
+                override fun onSuccess(statusCode: Int, headers: Headers, json: JSON) {
+                    // Remember to CLEAR OUT old items before appending in the new ones
+                    adapter.clear()
+                    try {
+                        // ...the data has come back, add new items to your adapter...
+                        val jsonArray = json.jsonArray
+                        val tweetsFromNetwork = Tweet.fromJsonArray(jsonArray)
+                        adapter.addAll(tweetsFromNetwork)
+                        minId = Tweet.getMinIdFromArray(tweetsFromNetwork, minId)
+                        // Now we call setRefreshing(false) to signal refresh has finished
+                        swipeContainer.isRefreshing = false
+
                         try {
-                            // ...the data has come back, add new items to your adapter...
-                            val jsonArray = json.jsonArray
-                            val tweetsFromNetwork = Tweet.fromJsonArray(jsonArray)
-                            adapter.addAll(tweetsFromNetwork)
-                            minId = Tweet.getMinIdFromArray(tweetsFromNetwork, minId)
-                            // Now we call setRefreshing(false) to signal refresh has finished
-                            swipeContainer.isRefreshing = false
-
-                            try {
-                                AsyncTask.execute {
-                                    Log.d("peter", "TimelineActivity fetchTimelineAsync onSuccess tweetDao: Saving data into database")
-                                    // Insert users first
-                                    val usersFromNetwork = User.fromJsonTweetArray(tweetsFromNetwork)
-                                    tweetDao.insertModel(*usersFromNetwork.toTypedArray())
-                                    // Insert tweets next
-                                    tweetDao.insertModel(*tweetsFromNetwork.toTypedArray())
-                                }
-                            } catch (e: Exception) {
-                                Log.e("peter", "TimelineActivity fetchTimelineAsync onSuccess AsyncTask.execute { tweetDao}: $e", )
+                            AsyncTask.execute {
+                                Log.d("peter", "TimelineActivity fetchTimelineAsync onSuccess tweetDao: Saving data into database")
+                                // Insert users first
+                                val usersFromNetwork = User.fromTweetArray(tweetsFromNetwork)
+                                tweetDao.insertModel(*usersFromNetwork.toTypedArray())
+                                // Insert tweets next
+                                tweetDao.deleteAllTweets()
+                                tweetDao.insertModel(*tweetsFromNetwork.toTypedArray())
                             }
-                        } catch (e: JSONException) {
-                            Log.e("peter", "TimelineActivity fetchTimelineAsync onSuccess: $e")
+                        } catch (e: Exception) {
+                            Log.e(
+                                "peter",
+                                "TimelineActivity fetchTimelineAsync onSuccess AsyncTask.execute { tweetDao }: $e"
+                            )
                         }
+                    } catch (e: JSONException) {
+                        Log.e("peter", "TimelineActivity fetchTimelineAsync onSuccess: $e")
                     }
+                }
 
-                    override fun onFailure(
-                        statusCode: Int, headers: Headers, response: String, throwable: Throwable
-                    ) {
-                        Log.e("peter", "Fetch timeline error $statusCode", throwable)
-                    }
-                })
-            }
+                override fun onFailure(
+                    statusCode: Int, headers: Headers, response: String, throwable: Throwable
+                ) {
+                    Log.e("peter", "Fetch timeline error $statusCode", throwable)
+                }
+            })
         } catch (e: Exception) {
             Log.e("peter", "TimelineActivity fetchTimelineAsync: $e")
         }
@@ -206,7 +215,7 @@ class TimelineActivity : AppCompatActivity() {
         }, minId - 1)
     }
 
-    fun showComposeDialog() {
+    private fun showComposeDialog() {
         val composeDialogFragment = ComposeFragment.newInstance("Compose New Tweet")
         composeDialogFragment.composeTweetDialogListener = object : ComposeTweetDialogListener {
             override fun onFinishComposeDialog(tweet: Tweet) {
@@ -219,8 +228,8 @@ class TimelineActivity : AppCompatActivity() {
         composeDialogFragment.show(supportFragmentManager, "peter")
     }
 
-    fun internetIsConnected(): Boolean {
-        return true
+    private fun isInternetConnected(): Boolean {
+//        return true
         return try {
             val command = "ping -c 1 google.com"
             Runtime.getRuntime().exec(command).waitFor() == 0
@@ -229,24 +238,32 @@ class TimelineActivity : AppCompatActivity() {
         }
     }
 
-    fun populateFromDatabase() {
+    private fun isNetworkConnected(): Boolean {
+        return true
+        val cm = this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        return cm.activeNetworkInfo != null
+    }
+
+    private fun populateFromDatabase() {
         // Query for existing tweets in the database
+        Toast.makeText(this, "No Internet connection. Populating tweets from databas.", Toast.LENGTH_LONG).show()
         try {
             AsyncTask.execute {
                 Log.d("peter", "TimelineActivity onCreate tweetDao.recentItems: Showing data from database")
                 val tweetsWithUsers = tweetDao.recentItems()
+                Log.d("peter", "TimelineActivity populateFromDatabase: ${tweetsWithUsers.toString()}")
                 val tweetsFromDB = TweetWithUser.getTweets(tweetsWithUsers)
                 adapter.clear()
                 adapter.addAll(tweetsFromDB)
             }
         } catch (e: Exception) {
-            Log.e("peter", "TimelineActivity onCreate tweetDao.recentItems: $e", )
+            Log.e("peter", "TimelineActivity onCreate tweetDao.recentItems: $e")
         }
 
     }
 
-    fun populateHomeTimeline() {
-        if (!internetIsConnected()) {
+    private fun populateHomeTimeline() {
+        if (!isInternetConnected()) {
             Log.d("peter", "TimelineActivity populateHomeTimeline internetIsConnected: false")
             populateFromDatabase()
         } else {
