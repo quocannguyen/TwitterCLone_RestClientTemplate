@@ -155,7 +155,7 @@ class TimelineActivity : AppCompatActivity() {
                                 AsyncTask.execute {
                                     Log.d("peter", "TimelineActivity fetchTimelineAsync onSuccess tweetDao: Saving data into database")
                                     // Insert users first
-                                    val usersFromNetwork = User.fromJsonTweetArray(tweetsFromNetwork)
+                                    val usersFromNetwork = User.fromTweetArray(tweetsFromNetwork)
                                     tweetDao.insertModel(*usersFromNetwork.toTypedArray())
                                     // Insert tweets next
                                     tweetDao.insertModel(*tweetsFromNetwork.toTypedArray())
@@ -235,6 +235,7 @@ class TimelineActivity : AppCompatActivity() {
             AsyncTask.execute {
                 Log.d("peter", "TimelineActivity onCreate tweetDao.recentItems: Showing data from database")
                 val tweetsWithUsers = tweetDao.recentItems()
+                Log.d("peter", "TimelineActivity populateFromDatabase: ${tweetsWithUsers.toString()}")
                 val tweetsFromDB = TweetWithUser.getTweets(tweetsWithUsers)
                 adapter.clear()
                 adapter.addAll(tweetsFromDB)

@@ -1,6 +1,6 @@
-# Project 2 - Twitter Clone
+# Project 2 - **Twitter Clone**
 
-Twitter Clone is an android app that allows a user to view his Twitter timeline. The app utilizes [Twitter REST API](https://dev.twitter.com/rest/public).
+**Twitter Clone** is an android app that allows a user to view his Twitter timeline. The app utilizes [Twitter REST API](https://dev.twitter.com/rest/public).
 
 Time spent: **X** hours spent in total
 
@@ -18,12 +18,13 @@ The following **required** functionality is completed:
 The following **optional** features are implemented:
 
 - [ ] User is using **"Twitter branded" colors and styles**
+   - [x] The floating action button's color is Twitter blue
 - [x] User can click links in tweets launch the web browser
 - [x] User can **select "reply" from detail view to respond to a tweet**
 - [x] The "Compose" action is moved to a FloatingActionButton instead of on the AppBar
 - [x] Compose tweet functionality is build using modal overlay
 - [ ] Use Parcelable instead of Serializable using the popular [Parceler library](http://guides.codepath.org/android/Using-Parceler).
-- [ ] User can **open the twitter app offline and see last loaded tweets**. Persisted in SQLite tweets are refreshed on every application launch. While "live data" is displayed when app can get it from Twitter API, it is also saved for use in offline mode.
+- [x] User can **open the twitter app offline and see last loaded tweets**. Persisted in SQLite tweets are refreshed on every application launch. While "live data" is displayed when app can get it from Twitter API, it is also saved for use in offline mode.
 - [x] When a user leaves the compose view without publishing and there is existing text, prompt to save or delete the draft. If saved, the draft should then be **persisted to disk** and can later be resumed from the compose view.
 - [ ] Enable your app to receive implicit intents from other apps. When a link is shared from a web browser, it should pre-fill the text and title of the web page when composing a tweet.
 
@@ -43,9 +44,17 @@ GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
 Describe any challenges encountered while building the app.
 
-- App sometimes crashes without error showing in Logcat.
 - Persisting data with Room crashes when app is run without Internet.
-- Loading Tweets from database error: lateinit var user has not been initialized.
+<!--     I/okhttp.OkHttpClient: <-- HTTP FAILED: java.net.UnknownHostException: Unable to resolve host "api.twitter.com": No address associated with hostname -->
+<!--     E/AndroidRuntime: FATAL EXCEPTION: OkHttp Dispatcher -->
+<!--         Process: com.twitterclone, PID: 13403 -->
+<!--         java.lang.NullPointerException: Parameter specified as non-null is null: method kotlin.jvm.internal.Intrinsics.checkNotNullParameter, parameter headers -->
+<!--             at com.codepath.apps.twitterclone.activities.TimelineActivity$fetchTimelineAsync$1.onFailure(Unknown Source:2) -->
+<!--             at com.codepath.asynchttpclient.callback.JsonHttpResponseHandler.onFailure(JsonHttpResponseHandler.java:44) -->
+<!--             at okhttp3.internal.connection.RealCall$AsyncCall.run(RealCall.kt:525) -->
+<!--             at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1167) -->
+<!--             at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:641) -->
+<!--             at java.lang.Thread.run(Thread.java:923) -->
 - Checking Internet connection is only working with my Samsung phone, not with the emulator.
 - I do not fully understand Room yet.
 - I do not know how to play a video from Url. I have not tried using YoutubePlayerView because the videos from Twitter are not Youtube videos.

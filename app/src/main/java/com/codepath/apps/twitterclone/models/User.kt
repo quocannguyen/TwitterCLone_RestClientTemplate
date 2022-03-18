@@ -33,7 +33,7 @@ data class User (
             )
         }
 
-        fun fromJsonTweetArray(tweetsFromNetwork: List<Tweet>): List<User> {
+        fun fromTweetArray(tweetsFromNetwork: List<Tweet>): List<User> {
             val users = ArrayList<User>()
             for (tweet in tweetsFromNetwork) {
                 tweet.user?.let { users.add(it) }
