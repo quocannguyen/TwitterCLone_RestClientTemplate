@@ -246,7 +246,7 @@ class TimelineActivity : AppCompatActivity() {
 
     private fun populateFromDatabase() {
         // Query for existing tweets in the database
-        Toast.makeText(this, "No Internet connection. Populating tweets from databas.", Toast.LENGTH_LONG).show()
+        Toast.makeText(this, "No Internet connection. Populating tweets from database.", Toast.LENGTH_LONG).show()
         try {
             AsyncTask.execute {
                 Log.d("peter", "TimelineActivity onCreate tweetDao.recentItems: Showing data from database")
